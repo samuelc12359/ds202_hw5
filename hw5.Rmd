@@ -48,13 +48,13 @@ dataCleaned$`Day of Year`<-yday(dataCleaned$Date)
 dataCleaned$Year <- year(dataCleaned$Date)
 dataCleaned$Month <- month(dataCleaned$Date)
 dataCleaned$Day <- day(dataCleaned$Date)
-view(dataCleaned)
+=
 ```
 
 3. First overview:
 -Plot a scatterplot of lat and long of store locations.
 ```{r}
-ggplot(dataCleaned, aes(x=Longitude, y=Latitude)) + geom_point()
+ggplot(dataCleaned, aes(x=Longitude, y=Latitude)) + geom_point() + ggtitle("Longitude and Latitude")
 
 ```
 -Provide a visual breakdown of the liquor category (by Category Name). Include volume sold in the breakdown.
@@ -89,12 +89,7 @@ library(dplyr)
 VolumeSold <- group_by(dataCleaned, `Day of Year`)
 VolumeSold
 
-
-
-
-
-
-ggplot(VolumeSold, aes(x=VolumeSold$Day, y=VolumeSold$`Volume Sold (Liters)`))+geom_point(size=.5)+facet_wrap(~Month)+xlab("Day of the Month")+ylab("Volume Sold (Liters)")
+ggplot(VolumeSold, aes(x=VolumeSold$Day, y=VolumeSold$`Volume Sold (Liters)`)) +geom_point(size=.5) + facet_wrap(~Month) + xlab("Day of the Month") + ylab("Volume Sold (Liters)")
 ```
 Find the dates for ISU football home games in Fall 2018. Can you see a pattern?
 ```{r}
@@ -112,4 +107,4 @@ Find the dates for ISU football home games in Fall 2018. Can you see a pattern?
 #11/24/2018
 #12/1/2018
 ```
-There is a steep spike in liquor sales on game days. The day before a game has decently higher than average sales as well. We would expect this, especially in a college town. 
+There is a large increase in liquor sales on home game days, even away games there is an increase, even though it is not as large. Even days before a game there is an increase. This is not surprising, as i assume this is true in every college town accross America. 
