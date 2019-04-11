@@ -48,7 +48,6 @@ dataCleaned$`Day of Year`<-yday(dataCleaned$Date)
 dataCleaned$Year <- year(dataCleaned$Date)
 dataCleaned$Month <- month(dataCleaned$Date)
 dataCleaned$Day <- day(dataCleaned$Date)
-=
 ```
 
 3. First overview:
@@ -80,7 +79,6 @@ Summarize number of sales, volume of liquor sold and amount of money spent.
 sale.count <- group_by(dataCleaned, `Day of Year`)
 tally(sale.count)
 summarise(sale.count, sum(`Volume Sold (Liters)`), sum(`Day of Year`), sum(`Sale (Dollars)`))
-
 ```
 Plot volume sold by day (use a scatterplot of volume by day and facet by month). Describe any patterns.
 ```{r}
@@ -93,18 +91,18 @@ ggplot(VolumeSold, aes(x=VolumeSold$Day, y=VolumeSold$`Volume Sold (Liters)`)) +
 ```
 Find the dates for ISU football home games in Fall 2018. Can you see a pattern?
 ```{r}
-#9/1/2018
+#9/1/2018 HOME
 #9/8/2018
-#9/15/2018
-#9/22/2018
+#9/15/2018 HOME
+#9/22/2018 HOME
 #9/29/2018
 #10/6/2018
-#10/13/2018
-#10/27/2018
+#10/13/2018 HOME
+#10/27/2018 HOME
 #11/3/2018
-#11/10/2018
+#11/10/2018 HOME
 #11/17/2018
-#11/24/2018
+#11/24/2018 HOME
 #12/1/2018
 ```
 There is a large increase in liquor sales on home game days, even away games there is an increase, even though it is not as large. Even days before a game there is an increase. This is not surprising, as i assume this is true in every college town accross America. 
