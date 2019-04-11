@@ -1,0 +1,115 @@
+---
+title: "hw5"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+1. Get the Data: 
+```{r}
+if (file.exists("alcohol.rds")) {
+  data <- readRDS("alcohol.rds")
+} else {
+  url <- "https://xdaiisu.github.io/ds202materials/data/ames.csv"
+  data <- readr::read_csv(url)
+  saveRDS(data, file="alcohol.rds")
+} 
+```
+2. Data cleaning:
+-extract geographic latitude and longitude from the variable Store Location
+```{r}
+library(tidyverse)
+dataNew <- data %>% separate(`Store Location`, c("address1", "address2", "coords"), sep = "\n") %>% select(-address1, -address2) %>% mutate(coords = gsub("[()]", "", coords)) %>% separate(coords, c("Latitude", "Longitude"), sep = ",") 
+```
+
+-Check variable types. Pick five variables that need to be converted to a different type and fix those.
+```{r}
+str(dataNew)
+dataCleaned <- dataNew
+# Longitude as number 
+dataCleaned$Longitude <- as.double(dataNew$Longitude, round = FALSE)
+# Latitude as number
+dataCleaned$Latitude <- as.double(dataNew$Latitude, digits = 10)
+# Date (using Lubridate)
+library(lubridate)
+dataCleaned$Date <- mdy(dataCleaned$Date)
+#vendor Number as number
+dataCleaned$`Vendor Number` <- as.numeric(dataCleaned$`Vendor Number`)
+#pack as integer, because you can not have a decimal in a pack. 
+dataCleaned$Pack <- as.integer(dataCleaned$Pack)
+str(dataNew)
+str(dataCleaned)
+```
+
+-Extract year, month and day from the variable Date
+```{r}
+dataCleaned$`Day of Year`<-yday(dataCleaned$Date)
+dataCleaned$Year <- year(dataCleaned$Date)
+dataCleaned$Month <- month(dataCleaned$Date)
+dataCleaned$Day <- day(dataCleaned$Date)
+view(dataCleaned)
+```
+
+3. First overview:
+-Plot a scatterplot of lat and long of store locations.
+```{r}
+ggplot(dataCleaned, aes(x=Longitude, y=Latitude)) + geom_point()
+
+```
+-Provide a visual breakdown of the liquor category (by Category Name). Include volume sold in the breakdown.
+```{r}
+library(ggforce)
+
+
+ggplot(dataCleaned, aes(y=`Volume Sold (Liters)`)) + geom_boxplot() + facet_wrap_paginate(~`Category Name`, ncol=5, nrow=5, scales="free_y", page = 1 )
+ggplot(dataCleaned, aes(y=`Volume Sold (Liters)`)) + geom_boxplot() + facet_wrap_paginate(~`Category Name`, ncol=5, nrow=5, scales="free_y", page = 2 )
+ggplot(dataCleaned, aes(y=`Volume Sold (Liters)`)) + geom_boxplot() + facet_wrap_paginate(~`Category Name`, ncol=5, nrow=5, scales="free_y", page = 3 )
+ggplot(dataCleaned, aes(y=`Volume Sold (Liters)`)) + geom_boxplot() + facet_wrap_paginate(~`Category Name`, ncol=5, nrow=5, scales="free_y", page = 4 )
+ggplot(dataCleaned, aes(y=`Volume Sold (Liters)`)) + geom_boxplot() + facet_wrap_paginate(~`Category Name`, ncol=5, nrow=5, scales="free_y", page = 5 )
+ggplot(dataCleaned, aes(y=`Volume Sold (Liters)`)) + geom_boxplot() + facet_wrap_paginate(~`Category Name`, ncol=5, nrow=4, scales="free_y", page = 6 )
+```
+4. Find the daily sales liquor sales in Ames in 2018.
+```{r}
+Ames2018 <- filter(dataCleaned, Year == "2018")
+liquor.grp.year <- group_by(Ames2018, `Day of Year`)
+summarise(liquor.grp.year, sum(`Sale (Dollars)`))
+```
+Summarize number of sales, volume of liquor sold and amount of money spent. 
+```{r}
+sale.count <- group_by(dataCleaned, `Day of Year`)
+tally(sale.count)
+summarise(sale.count, sum(`Volume Sold (Liters)`), sum(`Day of Year`), sum(`Sale (Dollars)`))
+
+```
+Plot volume sold by day (use a scatterplot of volume by day and facet by month). Describe any patterns.
+```{r}
+library(dplyr)
+?facet_grid
+VolumeSold <- group_by(dataCleaned, `Day of Year`)
+VolumeSold
+
+
+
+
+
+
+ggplot(VolumeSold, aes(x=VolumeSold$Day, y=VolumeSold$`Volume Sold (Liters)`))+geom_point(size=.5)+facet_wrap(~Month)+xlab("Day of the Month")+ylab("Volume Sold (Liters)")
+```
+Find the dates for ISU football home games in Fall 2018. Can you see a pattern?
+```{r}
+#9/1/2018
+#9/8/2018
+#9/15/2018
+#9/22/2018
+#9/29/2018
+#10/6/2018
+#10/13/2018
+#10/27/2018
+#11/3/2018
+#11/10/2018
+#11/17/2018
+#11/24/2018
+#12/1/2018
+```
+There is a steep spike in liquor sales on game days. The day before a game has decently higher than average sales as well. We would expect this, especially in a college town. 
